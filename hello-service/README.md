@@ -70,5 +70,5 @@ Ce service utilise le même pattern Dockerfile multi-stage que le service Car Re
 ## Remarques
 
 - Service léger et minimaliste pour la démonstration
-- Idéal pour tester la communication inter-services
+- Peut servir de point de départ à un futur exercice de communication inter-services ; aucun appel entre services n'est encore implémenté
 - Éducatif pour comprendre les microservices
