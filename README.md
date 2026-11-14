@@ -1,84 +1,118 @@
-# Rental Microservices — état initial
+# Rental DevOps — checkpoint 00
 
-Ce dépôt contient le socle historique d'une future formation DevOps d'environ
-30 heures. Il est actuellement en phase de restructuration.
+Ce monorepo est le socle d'une formation DevOps pratique destinée à des
+étudiants de master. Le checkpoint 00 fournit deux services autonomes,
+testables et conteneurisés, mais laisse volontairement à construire la
+communication distribuée, la persistance et le déploiement Kubernetes.
 
-L'état antérieur complet, documentation comprise, est conservé par le tag Git
-`legacy/v1-microservices`. La documentation présente dans la branche courante
-décrit uniquement ce qui existe réellement.
+## Architecture actuelle
 
-## Services
-
-| Service | Technologie | Port | Rôle actuel |
+| Service | Technologie | Port | Responsabilité |
 |---|---|---:|---|
-| `car-rental-service` | Java 17, Spring Boot, Gradle | 8080 | API de location avec stockage en mémoire |
-| `hello-service` | Java 17, Spring Boot, Gradle | 8081 | API minimale retournant `Hello` |
+| `car-rental-service` | Java 17, Spring Boot, Gradle | 8080 | Gestion en mémoire des voitures et locations |
+| `pricing-service` | Python 3.12, FastAPI | 8000 | Calcul autonome des tarifs |
 
-Les deux services possèdent un Dockerfile multi-stage et sont assemblés par
-Docker Compose. Ils partagent un réseau Docker, mais ne communiquent pas encore
+Les deux services partagent un réseau Docker. Ils ne communiquent pas encore
 entre eux.
 
-## Démarrage avec Docker Compose
+## Prérequis
 
-Prérequis : Docker avec la commande `docker compose`.
+- Git ;
+- JDK 17 ou supérieur ;
+- Python 3.12 ou une version compatible ;
+- Docker avec Docker Compose.
 
-```bash
-docker compose up --build
-```
-
-Dans un autre terminal :
-
-```bash
-curl http://localhost:8080/cars
-curl http://localhost:8081/hello
-```
-
-Pour arrêter les services :
+Vérification rapide :
 
 ```bash
-docker compose down
+python scripts/course.py prerequisites
 ```
 
-## Tests locaux
-
-Prérequis : JDK 17.
-
-Sous Linux ou macOS :
+## Installation des dépendances Python
 
 ```bash
-cd car-rental-service && ./gradlew clean test
-cd ../hello-service && ./gradlew clean test
+cd apps/pricing-service
+python -m venv .venv
 ```
 
-Sous Windows PowerShell :
+Activation sous Linux ou macOS :
+
+```bash
+source .venv/bin/activate
+```
+
+Activation sous PowerShell :
 
 ```powershell
-Set-Location car-rental-service
-.\gradlew.bat clean test
-Set-Location ..\hello-service
-.\gradlew.bat clean test
+.venv\Scripts\Activate.ps1
 ```
 
-## Intégration continue actuelle
+Puis :
 
-Deux workflows GitHub Actions exécutent séparément les opérations suivantes :
+```bash
+python -m pip install -r requirements-dev.txt
+cd ../..
+```
 
-1. tests Gradle ;
-2. compilation ;
-3. recherche de secrets avec Gitleaks ;
-4. construction des images Docker ;
-5. publication dans GHCR uniquement après un push sur `main` ;
-6. scan Trivy des images publiées.
+## Tests
 
-Il n'existe pas encore de déploiement, de cluster Kind, de tests E2E, de base
-de données, de volumes applicatifs ni de communication inter-services.
+Depuis la racine :
 
-## Documentation maintenue
+```bash
+python scripts/course.py test
+```
 
-- [État de référence et commandes](docs/PROJECT-BASELINE.md)
-- [Notes pédagogiques extraites de l'ancienne documentation](archive/legacy-docs/README.md)
-- [Car Rental Service](car-rental-service/README.md)
-- [Hello Service](hello-service/README.md)
+Cette commande exécute les tests Gradle puis les tests Pytest.
+Pour diagnostiquer séparément un service, utiliser `test-java` ou
+`test-python` à la place de `test`.
 
-La prochaine étape prévue consiste à produire le checkpoint étudiant initial,
-avec un service Python de tarification à la place de `hello-service`.
+## Exécution avec Docker Compose
+
+```bash
+python scripts/course.py compose-up
+python scripts/course.py smoke
+```
+
+Endpoints utiles :
+
+```text
+GET  http://localhost:8080/health
+GET  http://localhost:8080/cars
+GET  http://localhost:8000/health
+POST http://localhost:8000/quotes
+GET  http://localhost:8000/docs
+```
+
+Arrêt :
+
+```bash
+python scripts/course.py compose-down
+```
+
+## Organisation
+
+```text
+apps/                 Services applicatifs
+archive/              Notes historiques conservées
+course/               Futurs supports Quarto
+docs/                 État de référence et checkpoints
+infra/                Future infrastructure de test
+scripts/              Commandes portables du cours
+tests/                Futures suites de tests système
+.github/workflows/     CI minimale à améliorer pendant la formation
+```
+
+## Limites intentionnelles du checkpoint
+
+- stockage Java uniquement en mémoire ;
+- aucune communication entre les services ;
+- aucune base PostgreSQL ni migration ;
+- aucun test de contrat ou test E2E ;
+- aucun manifeste Kubernetes ou cluster Kind ;
+- workflows CI encore redondants et non durcis.
+
+Voir [la fiche du checkpoint](docs/CHECKPOINT-00.md) pour les objectifs et les
+critères de validation.
+
+L'état historique antérieur à la refonte reste disponible sous le tag
+`legacy/v1-microservices`.

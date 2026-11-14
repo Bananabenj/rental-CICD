@@ -18,3 +18,12 @@ bin/
 *.jar
 *.war
 *.ear
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+.coverage
+htmlcov/
