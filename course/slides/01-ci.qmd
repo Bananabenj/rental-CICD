@@ -1,0 +1,207 @@
+---
+title: "Checkpoint 01"
+subtitle: "Concevoir une CI qui donne confiance"
+author: "Rental DevOps — Master informatique"
+format:
+  revealjs:
+    theme: [default, ../theme.scss]
+    slide-number: c/t
+    transition: fade
+    background-transition: fade
+    width: 1280
+    height: 720
+    margin: 0.08
+    center: false
+    navigation-mode: linear
+    chalkboard: false
+    footer: "Rental DevOps · CI"
+---
+
+## Objectifs du module
+
+À l'issue du TP, vous saurez :
+
+- transformer un risque en contrôle automatisé ;
+- séparer **tests**, **qualité** et **construction** ;
+- produire des preuves de diagnostic durables ;
+- définir des contrôles requis sans bloquer les PR ;
+- reproduire la CI sur votre poste.
+
+::: {.fragment .accent}
+Une pipeline verte n'est utile que si l'on comprend ce qu'elle garantit.
+:::
+
+## Point de départ : checkpoint 00
+
+```text
+apps/
+├── car-rental-service/   Java · Spring Boot
+└── pricing-service/      Python · FastAPI
+```
+
+Déjà présent : tests, Dockerfiles, Docker Compose, construction d'images.
+
+Encore fragile :
+
+- contrôles difficiles à reproduire ;
+- qualité non bloquante ;
+- peu de preuves après un échec ;
+- responsabilité des jobs peu lisible.
+
+## La CI est une boucle de retour
+
+```{mermaid}
+flowchart LR
+  A[Petit changement] --> B[Contrôles rapides]
+  B --> C{Résultat lisible}
+  C -->|échec| D[Diagnostic + correction]
+  D --> A
+  C -->|succès| E[Artefact candidat]
+```
+
+Trois propriétés à optimiser ensemble : **rapidité**, **fiabilité**,
+**explicabilité**.
+
+## Un job = une promesse
+
+| Job | Question à laquelle il répond |
+|---|---|
+| Tests | Le comportement attendu est-il préservé ? |
+| Qualité | Le changement respecte-t-il les règles partagées ? |
+| Image | Peut-on produire le livrable déployable ? |
+| Secrets | A-t-on introduit un secret dans l'historique ? |
+
+Séparer les jobs localise l'échec et permet d'exprimer les dépendances.
+
+## Le graphe du checkpoint 01
+
+```{mermaid}
+flowchart LR
+  subgraph Java
+    JT[Java tests] --> JD[Java Docker image]
+    JQ[Java quality] --> JD
+  end
+  subgraph Python
+    PT[Python tests] --> PD[Python Docker image]
+    PQ[Python quality] --> PD
+  end
+  S[Secret detection]
+```
+
+Les constructions Docker démarrent uniquement si les deux portes du service
+sont vertes.
+
+## Local d'abord, CI ensuite
+
+```bash
+python scripts/course.py verify
+```
+
+Cette commande exécute les mêmes familles de contrôles :
+
+- Gradle + Pytest pour le comportement ;
+- Checkstyle + Ruff pour la qualité.
+
+La CI ne doit pas être un environnement mystérieux réservé au serveur.
+
+## Les artefacts racontent l'échec
+
+```yaml
+- name: Upload test reports
+  if: always()
+  uses: actions/upload-artifact@v7
+  with:
+    path: apps/pricing-service/build/test-results/
+    retention-days: 7
+```
+
+`if: always()` conserve les rapports même si l'étape précédente échoue.
+
+Un log dit **où regarder** ; un rapport aide à comprendre **ce qui a cassé**.
+
+## Cache : accélérateur, pas vérité
+
+- Gradle : dépendances et distribution du wrapper ;
+- pip : paquets indexés par le fichier de dépendances ;
+- Buildx : couches Docker par service.
+
+La clé doit changer lorsque ses entrées changent. Un cache doit pouvoir être
+supprimé sans changer le résultat fonctionnel.
+
+::: {.fragment .accent}
+Si vider le cache casse la build, le cache masque une dépendance.
+:::
+
+## Le piège des filtres de chemins
+
+Un workflow requis mais ignoré par `paths` peut laisser une PR en attente
+indéfiniment.
+
+Dans ce checkpoint :
+
+- sur **pull request** : tous les contrôles requis existent ;
+- sur **push vers main** : les services non modifiés sont filtrés.
+
+On privilégie une règle de protection prévisible avant d'optimiser quelques
+minutes de calcul.
+
+## Détection de secrets
+
+Gitleaks inspecte l'historique complet, pas seulement le dernier diff.
+
+```yaml
+- uses: actions/checkout@v6
+  with:
+    fetch-depth: 0
+- uses: gitleaks/gitleaks-action@v3
+```
+
+Un secret détecté doit être **révoqué**, puis retiré de l'historique si
+nécessaire. Supprimer seulement la ligne ne rend pas le secret sûr.
+
+## Lire un échec méthodiquement
+
+1. Identifier le premier job en échec.
+2. Trouver la première erreur utile, pas la dernière ligne rouge.
+3. Télécharger le rapport produit.
+4. Reproduire avec `scripts/course.py`.
+5. Corriger une cause à la fois et pousser un petit commit.
+
+::: {.fragment .accent}
+Relancer sans hypothèse n'est pas une stratégie de diagnostic.
+:::
+
+## TP 01 — contrat de sortie
+
+À partir de `checkpoint/00-starter` :
+
+- provoquer puis diagnostiquer un échec ;
+- ajouter Checkstyle et Ruff ;
+- publier les rapports ;
+- construire les images après les portes qualité ;
+- ajouter la détection de secrets ;
+- rendre les sept contrôles obligatoires sur `main`.
+
+Résultat de référence : `checkpoint/01-ci`.
+
+## Dette assumée
+
+Ce checkpoint ne traite pas encore :
+
+- l'épinglage des actions par SHA ;
+- SBOM, signature et attestations ;
+- communication inter-services et contrats ;
+- persistance, Kind et environnement E2E.
+
+::: {.accent}
+Un bon checkpoint ferme un objectif et rend la prochaine limite visible.
+:::
+
+## Références
+
+- Documentation GitHub Actions : workflows, artefacts et protection de branche
+- Documentation officielle de Ruff et Checkstyle
+- OWASP CI/CD Security Cheat Sheet
+
+Les versions réellement utilisées sont visibles dans `.github/workflows/` et
+les fichiers de configuration des services.
