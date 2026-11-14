@@ -113,8 +113,8 @@ permissions minimales nécessaires.
 
 1. Installez Cosign.
 2. Signez `image@digest` avec l'identité OIDC du workflow.
-3. Attestez la provenance avec `actions/attest-build-provenance`.
-4. Attestez le SBOM avec `actions/attest-sbom`.
+3. Attestez la provenance avec `actions/attest`.
+4. Attestez le SBOM avec la même action et son entrée `sbom-path`.
 
 Ne créez pas de clé privée persistante et n'ajoutez aucun secret de signature.
 
