@@ -11,6 +11,7 @@ produit des preuves vérifiables sur son contenu et son origine.
 - toutes les actions GitHub tierces sont épinglées à un commit complet ;
 - les images de base Docker combinent un tag lisible et un digest immuable ;
 - Dependabot suit les commits d'actions et les digests Docker ;
+- le graphe de dépendances et les alertes de vulnérabilités GitHub sont activés ;
 - une revue des dépendances bloque les nouvelles vulnérabilités élevées ;
 - Syft produit un SBOM SPDX JSON pour chaque image publiée ;
 - Cosign signe chaque digest avec l'identité OIDC du workflow ;

@@ -84,8 +84,9 @@ Réintroduisez temporairement `@v7` pour observer l'échec, puis restaurez le SH
 
 ## 4. Revoir les dépendances d'une PR — 25 min
 
-Ajoutez un workflow `Dependency review` limité aux pull requests. Configurez le
-seuil d'échec sur `high`.
+Dans les paramètres de sécurité du dépôt, activez le graphe de dépendances et
+les alertes de vulnérabilités. Ajoutez ensuite un workflow `Dependency review`
+limité aux pull requests. Configurez le seuil d'échec sur `high`.
 
 Expliquez pourquoi ce contrôle examine le changement de dépendances tandis que
 Trivy examine le contenu final de l'image.
