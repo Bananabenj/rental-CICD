@@ -1,5 +1,23 @@
-# Support de cours
+# Support de cours Quarto
 
-Ce répertoire accueillera la présentation Quarto et les énoncés des six TP.
-Ils seront produits à partir des checkpoints techniques validés afin d'éviter
-la divergence entre le cours et l'implémentation.
+Ce projet Quarto rassemble les supports qui accompagnent les checkpoints
+techniques. Le premier module porte sur la boucle d'intégration continue.
+
+## Prévisualiser
+
+```bash
+quarto preview course
+```
+
+## Construire
+
+```bash
+quarto render course
+```
+
+La sortie HTML est créée dans `course/_site/` et n'est pas versionnée.
+
+## Contenu
+
+- `slides/01-ci.qmd` : présentation du module 01 ;
+- `labs/tp01.qmd` : TP guidé, critères d'acceptation et prolongements.
