@@ -1,25 +1,19 @@
-version: '3.8'
-
 services:
   car-rental-service:
     build:
-      context: ./car-rental-service
-      dockerfile: Dockerfile
+      context: ./apps/car-rental-service
     ports:
       - "8080:8080"
     environment:
-      - SPRING_APPLICATION_NAME=car-rental-service
+      SPRING_APPLICATION_NAME: car-rental-service
     networks:
       - rental-network
 
-  hello-service:
+  pricing-service:
     build:
-      context: ./hello-service
-      dockerfile: Dockerfile
+      context: ./apps/pricing-service
     ports:
-      - "8081:8081"
-    environment:
-      - SPRING_APPLICATION_NAME=hello-service
+      - "8000:8000"
     networks:
       - rental-network
 

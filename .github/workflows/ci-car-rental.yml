@@ -4,12 +4,13 @@ on:
   push:
     branches: [ main, develop ]
     paths:
-      - 'car-rental-service/**'
+      - 'apps/car-rental-service/**'
       - '.github/workflows/ci-car-rental.yml'
   pull_request:
     branches: [ main, develop ]
     paths:
-      - 'car-rental-service/**'
+      - 'apps/car-rental-service/**'
+      - '.github/workflows/ci-car-rental.yml'
 
 env:
   REGISTRY: ghcr.io
@@ -38,7 +39,7 @@ jobs:
           cache: gradle
       
       - name: Run tests
-        working-directory: car-rental-service
+        working-directory: apps/car-rental-service
         run: ./gradlew clean test --info
       
       - name: Upload test results
@@ -46,7 +47,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: test-results
-          path: car-rental-service/build/test-results/
+          path: apps/car-rental-service/build/test-results/
 
   # Code quality checks
   code-quality:
@@ -65,7 +66,7 @@ jobs:
           cache: gradle
       
       - name: Gradle build
-        working-directory: car-rental-service
+        working-directory: apps/car-rental-service
         run: ./gradlew build -x test
       
       - name: Check for secrets
@@ -115,7 +116,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: car-rental-service
+          context: apps/car-rental-service
           push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
