@@ -15,6 +15,25 @@ qui sera déployé ni l'identité de son producteur.
 Vous partez du tag `checkpoint/01-ci`. Le tag
 `checkpoint/02-supply-chain` sert de corrigé après le TP.
 
+## Parcours Git du TP
+
+La branche `main` contient l'état le plus avancé préparé par l'enseignant. Ne
+travaillez pas directement depuis cette branche et ne continuez pas depuis
+votre branche personnelle du TP 01.
+
+Pour ce TP :
+
+| Rôle | Référence Git |
+|---|---|
+| Point de départ | `checkpoint/01-ci` |
+| Branche de travail | `tp/02-supply-chain` |
+| Résultat de référence | `checkpoint/02-supply-chain` |
+
+Conservez votre branche du TP 01 comme archive. Le tag `checkpoint/01-ci`
+fournit à toute la promotion le même état validé. Après ce TP, votre branche
+`tp/02-supply-chain` restera également disponible, tandis que le TP 03 partira
+du corrigé officiel `checkpoint/02-supply-chain`.
+
 ## Livrables
 
 Votre pull request doit fournir :
