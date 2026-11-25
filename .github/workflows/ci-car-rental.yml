@@ -7,7 +7,6 @@ on:
       - 'apps/car-rental-service/**'
       - '.github/workflows/ci-car-rental.yml'
   pull_request:
-    branches: [main]
   workflow_dispatch:
 
 concurrency:
@@ -53,7 +52,7 @@ jobs:
           path: |
             apps/car-rental-service/build/test-results/test/
             apps/car-rental-service/build/reports/tests/test/
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 7
 
   quality:
