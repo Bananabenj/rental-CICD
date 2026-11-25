@@ -7,8 +7,6 @@ on:
       - 'apps/car-rental-service/**'
       - '.github/workflows/ci-car-rental.yml'
   pull_request:
-    branches:
-      - tp/01-ci 
   workflow_dispatch:
 
 concurrency:
