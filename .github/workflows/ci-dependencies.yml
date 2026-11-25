@@ -2,7 +2,8 @@ name: CI - dependency review
 
 on:
   pull_request:
-    branches: [main]
+  branches:
+    - tp/01-ci
   workflow_dispatch:
 
 concurrency:
