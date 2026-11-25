@@ -7,8 +7,8 @@ on:
       - 'apps/pricing-service/**'
       - '.github/workflows/ci-pricing.yml'
   pull_request:
-  branches:
-    - tp/01-ci
+    branches:
+      - tp/01-ci
   workflow_dispatch:
 
 concurrency:
