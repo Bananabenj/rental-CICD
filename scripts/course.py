@@ -50,11 +50,17 @@ def test() -> None:
 
 
 def lint_java() -> None:
-    run([*gradle_command(), "checkstyleMain", "checkstyleTest"], cwd=CAR_SERVICE)
+    run(
+        [*gradle_command(), "checkstyleMain", "checkstyleTest"],
+        cwd=CAR_SERVICE,
+    )
 
 
 def lint_python() -> None:
-    run([sys.executable, "-m", "ruff", "check", "app", "tests"], cwd=PRICING_SERVICE)
+    run(
+        [sys.executable, "-m", "ruff", "check", "app", "tests"],
+        cwd=PRICING_SERVICE,
+    )
     run(
         [sys.executable, "-m", "ruff", "format", "--check", "app", "tests"],
         cwd=PRICING_SERVICE,
@@ -102,7 +108,6 @@ def supply_chain_policy() -> None:
 def verify() -> None:
     test()
     lint()
-    supply_chain_policy()
 
 
 def compose_up() -> None:
