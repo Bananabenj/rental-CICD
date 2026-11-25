@@ -8,8 +8,8 @@ client = TestClient(app)
 def test_health_endpoint() -> None:
     response = client.get("/health")
 
-    assert response.status_code == 2008
-    assert response.json() == {"status": "UP"}
+    assert response.status_code == 2008 
+    assert response.json() == {"status": "UP"}  
 
 
 def test_creates_a_quote() -> None:
